@@ -1,7 +1,9 @@
-
+const uuidv4 = require('uuid/v4');
 
 createUser = async function (tokens) {
-    return 'NOT IMPLEMENTED';
+    const userId = uuidv4();
+    await User.create({ ...tokens, userId });
+    return userId;
 }
 
 storeTransactions = async function (userId, tokens) {
@@ -9,7 +11,7 @@ storeTransactions = async function (userId, tokens) {
 }
 
 getTransactions = async function (userId) {
-
+    return 'NOT IMPLEMENTED';
 }
 
 module.exports = {

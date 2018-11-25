@@ -1,11 +1,15 @@
 
-const { AuthAPIClient, DataAPIClient } = require("truelayer-client");
-const crypto = require("crypto");
+const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
+const crypto = require('crypto');
 
 const authClient = new AuthAPIClient(sails.config.trueLayer.auth)
 const config = sails.config.trueLayer;
 
-validateToken =  async function (accessToken) {
+parseTransaction = function (transaction) {
+
+}
+
+validateToken = async function (accessToken) {
     return await DataAPIClient.validateToken(accessToken)
 }
 
@@ -25,9 +29,20 @@ getAuthUrl = function (redirectUrl) {
     return authClient.getAuthUrl(redirectUrl, config.scopes, nonce, false, false, config.enableMock);
 }
 
-fetchTransactions = function (tokens) {
-    // TODO
-    return 'NOT IMPLEMENTED';
+fetchBankTransactions = async function (accessToken) {
+    let accounts = (await DataAPIClient.getAccounts(accessToken)).results;
+    let allTransactions = await Promise.all(accounts.map(async account => {
+        return (await DataAPIClient.getTransactions(accessToken, account.account_id)).results;
+    }));
+    return allTransactions;
+}
+
+fetchCardTransactions = async function (accessToken) {
+    let cards = (await DataAPIClient.getCards(accessToken)).results;
+    let allTransactions = await Promise.all(cards.map(async card => {
+        return (await DataAPIClient.getCardTransactions(accessToken, card.account_id)).results;
+    }));
+    return allTransactions;
 }
 
 module.exports = {
@@ -35,5 +50,6 @@ module.exports = {
     refreshTokens,
     exchangeCodeForTokens,
     getAuthUrl,
-    fetchTransactions
+    fetchBankTransactions,
+    fetchCardTransactions
 };
