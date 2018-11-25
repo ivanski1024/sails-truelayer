@@ -19,7 +19,10 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': { view: 'pages/homepage' },
+  'GET /': { controller: 'AppController', action: 'handleRoot' },
+  'GET /callback': { controller: 'AppController', action: 'handleCallback' },
+  'GET /transactions': { controller: 'AppController', action: 'handleGetTransactions' },
+  'GET /debugInformation': { controller: 'AppController', action: 'handleGetDebugInformation' }
 
 
   /***************************************************************************
