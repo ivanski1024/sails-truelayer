@@ -1,6 +1,6 @@
 const config = sails.config.custom;
 const TrueLayerService = sails.services.truelayerservice;
-const UserService = sails.services.UserService;
+const UserService = sails.services.userservice;
 
 const redirectUrl = config.baseUrl + 'callback';
 
@@ -16,11 +16,11 @@ module.exports = {
       let userId = await UserService.createUser(tokens);
 
       // fetch and store bank transactions
-      let bankTransactions = await TrueLayerService.fetchBankTransactions(tokens);
+      let bankTransactions = await TrueLayerService.fetchBankTransactions(tokens.accessToken);
       await UserService.storeTransactions(userId, bankTransactions)
 
       // fetch and store card transactions
-      let cardTransactions = await TrueLayerService.fetchCardTransactions(tokens);
+      let cardTransactions = await TrueLayerService.fetchCardTransactions(tokens.accessToken);
       await UserService.storeTransactions(userId, cardTransactions);
 
       return res.ok({ status: 'Success', userId: userId });
