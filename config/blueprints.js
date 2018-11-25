@@ -17,7 +17,7 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  // actions: false,
+  actions: false,
 
 
   /***************************************************************************
@@ -26,16 +26,16 @@ module.exports.blueprints = {
   *                                                                          *
   ***************************************************************************/
 
-  // rest: true,
+  rest: true,
 
 
   /***************************************************************************
   *                                                                          *
-  * Automatically expose CRUD "shortcut" routes to GET requests?             *
+  * Automatically expose CRUD 'shortcut' routes to GET requests?             *
   * (These are enabled by default in development only.)                      *
   *                                                                          *
   ***************************************************************************/
 
-  // shortcuts: true,
+  shortcuts: true,
 
 };
