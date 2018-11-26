@@ -5,8 +5,19 @@ const crypto = require('crypto');
 const authClient = new AuthAPIClient(sails.config.trueLayer.auth)
 const config = sails.config.trueLayer;
 
-parseTransaction = function (transaction) {
-
+parseTransaction = function (transaction, additionalFields) {
+    return {
+        ...additionalFields,
+        transaction_id: transaction.transaction_id,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        transaction_type: transaction.transaction_type,
+        transaction_category: transaction.transaction_category,
+        timestamp: transaction.timestamp,
+        merchant_name: transaction.merchant_name,
+        description: transaction.description,
+        transaction_classification: transaction.transaction_classification ? transaction.transaction_classification.join(' ') : '',
+    };
 }
 
 validateToken = async function (accessToken) {
@@ -14,9 +25,7 @@ validateToken = async function (accessToken) {
 }
 
 refreshTokens = async function (accessToken, refreshToken) {
-    let result = await authClient.refreshAccessToken(refreshToken);
-    accessToken = result.access_token;
-    refreshToken = result.refresh_token;
+    return await authClient.refreshAccessToken(refreshToken);
 }
 
 exchangeCodeForTokens = async function (redirectUrl, code) {
@@ -29,18 +38,22 @@ getAuthUrl = function (redirectUrl) {
     return authClient.getAuthUrl(redirectUrl, config.scopes, nonce, false, false, config.enableMock);
 }
 
-fetchBankTransactions = async function (accessToken) {
+fetchBankTransactions = async function (accessToken, userId) {
     let accounts = (await DataAPIClient.getAccounts(accessToken)).results;
     let allTransactions = await Promise.all(accounts.map(async account => {
-        return (await DataAPIClient.getTransactions(accessToken, account.account_id)).results;
+        return ((await DataAPIClient.getTransactions(accessToken, account.account_id)).results).map(transaction => {
+            return parseTransaction(transaction, { account_id: account.account_id, user_id: userId, account_type: 'bank_account' })
+        }); 
     }));
     return allTransactions;
 }
 
-fetchCardTransactions = async function (accessToken) {
+fetchCardTransactions = async function (accessToken, userId) {
     let cards = (await DataAPIClient.getCards(accessToken)).results;
     let allTransactions = await Promise.all(cards.map(async card => {
-        return (await DataAPIClient.getCardTransactions(accessToken, card.account_id)).results;
+        return ((await DataAPIClient.getCardTransactions(accessToken, card.account_id)).results).map(transaction => {
+            return parseTransaction(transaction, { account_id: card.account_id, user_id: userId, account_type: 'card' })
+        });
     }));
     return allTransactions;
 }

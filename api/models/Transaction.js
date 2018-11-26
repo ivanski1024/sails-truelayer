@@ -7,7 +7,7 @@
 
 module.exports = {
   attributes: {
-    transaction_id: { type: 'string', primaryKey: true },
+    transaction_id: { type: 'string' },
     amount: { type: 'number', required: true },
     currency: { type: 'string', required: true },
     transaction_type: { type: 'string', required: true },
@@ -16,10 +16,9 @@ module.exports = {
     merchant_name: { type: 'string' },
     description: { type: 'string' },
     transaction_classification: { type: 'string' },
-    account: {
-      model: 'account',
-      required: true
-    }
+    account_id: { type: 'string', required: true, autoMigrations: { index: true} },
+    user_id: { type: 'string', required: true },
+    account_type: { type: 'string', isIn: ['card', 'bank_account'], required: true }
   },
 };
 

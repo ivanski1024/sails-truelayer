@@ -7,19 +7,18 @@
 
 module.exports = {
   attributes: {
-    account_id: { type: 'string', primaryKey: true },
+    account_id: {
+      type: "string",
+      required: true
+    },
     account_type: {
-      type: 'string',
-      isIn: ['card', 'bankAccount'],
+      type: "string",
+      isIn: ["card", "bankAccount"],
       required: true
     },
-    user: {
-      model: 'user',
-      required: true
-    },
-    transactions: {
-      collection: 'transaction',
-      via: 'account'
+    user_id: {
+      type: "string",
+         required: true
     }
   }
 };

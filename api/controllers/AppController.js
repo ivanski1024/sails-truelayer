@@ -16,12 +16,12 @@ module.exports = {
       let userId = await UserService.createUser(tokens);
 
       // fetch and store bank transactions
-      let bankTransactions = await TrueLayerService.fetchBankTransactions(tokens.accessToken);
-      await UserService.storeTransactions(userId, bankTransactions)
+      let bankTransactions = await TrueLayerService.fetchBankTransactions(tokens.accessToken, userId);
+      await UserService.storeTransactions(bankTransactions)
 
       // fetch and store card transactions
-      let cardTransactions = await TrueLayerService.fetchCardTransactions(tokens.accessToken);
-      await UserService.storeTransactions(userId, cardTransactions);
+      let cardTransactions = await TrueLayerService.fetchCardTransactions(tokens.accessToken, userId);
+      await UserService.storeTransactions(cardTransactions);
 
       return res.ok({ status: 'Success', userId: userId });
     } catch (err) {
@@ -31,7 +31,7 @@ module.exports = {
 
   handleGetTransactions: async function (req, res) {
     try {
-      let transactions = await UserService.fetchTransactions(req.query.userId);
+      let transactions = await UserService.getTransactions(req.query.userId);
       return res.ok({ status: 'Success', results: transactions })
     } catch (err) {
       return res.serverError({ status: 'Failed', error: err });
